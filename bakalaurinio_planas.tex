@@ -1,0 +1,89 @@
+\documentclass{VUMIFPSkursinis}
+\usepackage{algorithmicx}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{bm}
+\usepackage{caption}
+\usepackage{color}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{subfig}
+\usepackage{wrapfig}
+
+% Titulinio aprašas
+\university{Vilniaus universitetas}
+\faculty{Matematikos ir informatikos institutas}
+\department{Programų sistemų katedra}
+\papertype{Bakalauro darbas}
+\title{Prekės pardavimo prognozavimas iš vaizdo ir aprašymo naudojant giliuosius neuroninius tinklus}
+\titleineng{Predicting advert sale from its image and description using deep learning networks}
+\status{4 kurso 5 grupės studentas}
+\author{Ignas Bradauskas}
+\supervisor{Linas Petkevičius, J. Asist.}
+\date{Vilnius – \the\year}
+
+% Nustatymai
+%\setmainfont{Palemonas}   % Pakeisti teksto šriftą į Palemonas (turi būti įdiegtas sistemoje)
+\bibliography{bibliografija}
+
+\begin{document}
+\maketitle
+
+\sectionnonum{Tyrimo objektas ir aktualimas}
+
+Amerikos įmonė „Starbucks“ 2007-ais metais patyrė staigų pelno kritimą (nuo 1 bilijono dolerių iki 504 milijonų). 
+Buvo būtina imtis veiksmų ir įmonės valdžia nusprendė pasitelkti naujausias technologijas spręsti šiai problemai. Jie sukūrė lojalumo programą, dovanų kortelių programą ir, turbūt svarbiausia, elektroninę parduotuvę „store.starbucks.com“.
+Šis ankstyvus modernizavimasis lėmė įstaigos sėkmę ir leido jai tapti viena garsiausių kavos įmonių pasaulyje. Kiti
+pasaulio mažmeninės prekybos verslai irgi neatsilieka ir pradeda naudoti interneto teigiamas paslaugas. Naujausi statistiniai duomenys
+teigia, jog elektoroninė komercija (e-komercija) sudaro apie 9,5\% JAV mažmeninės prekybos rinkos dalies ir prognozuojama, jog ši dalis toliau sparčiai augs. Nuo ketivtojo 2017-tųjų ketvirčio iki pirmojo 2018-tųjų ji išaugo \textit{3,9\%  (±0.7\%)}. Iš duomenų matoma, jog prekyba internetu, šiais laikais, yra kaip niekad aktuali ir sparčiai auganti. Dėl šios srities artimu sąryšiu su itin dideliais duomenų srautais, atsiveria galimybė patogiai pritaikyti dirbtinių neuroninių tinklų tenchnologiją. Tiksliau tariant, bus dalinai realizuojamas WTTE-RNN (angl. Weibull Time To EventRecurrent Neural Network) dirbtinis neuronų tinklas skirtas spręsti skelbime reklamuojamos prekės pardavimo prognozavimo uždavinį. 
+
+Uždavinį sprendžiantis tinklas būtų naudingas tiek iš vartotojo tiek iš puslapio administracijos pusės. Siekiant išlaikyti gerą vardą ir kokybišką turinį portalo vadovybė gali turėti norą demonstruoti patraukliausius skelbimus savo pradiniame puslapyje. Visgi, jeigu vartotojas atvertęs vieną puslapį mato labiau viliojančius pasiūlymus negu atvertęs kitą, jis turbūt norės lankytis geriasniame.
+
+Vartotojas taip pat gali gauti naudos kuriant skelbimą. Didelią prekės pardavimo proceso dalį užima rinkos analizė. Darbe aprašomas DNT būtų pajėgus atlikti rinkos analizės dalį už vartotoją - kuo trumpesnis laiko tarpas iki prognazuojamo pardavimo, tuo prekė patrauklesnė. Būtų galima nesunkiai šią metriką paversti į kokią kitą, labiau atitinkančią žmogaus kompiuterio sąveikos geriausias praktikas.
+
+Šias problemas ir daugiau jų galėtų spręsti DNT, kurio modelį sudarytų iš anksto apmokintas Resnet tinklas, Google sukurtas universalus sakinių užkoduotojas (angl. universal sentance encoder) skirtas apdoroti prekės aprašymą, pilnai sujungtas neuroninis tinklas. Tinkle turėtų būti optimizuojami parametrai Weibull pasiskirstymo funkcijai, siekant sukurti lygtį, lengvai analizuojamą statistinių metodų. DNT apsimokinti panaudotų istorinius skelbimų duomenis. Programa apdorotų šią informaciją ir jos galutinė išvestis būtų prognozė kada objektas bus parduotas. Tokį rezultatą būtų patogu pritaikyti spręsti prieš tai išvardintus uždavinius. Išsprendžiamas ir administratoriaus poreikis. Sistema galėtų paimti visus aktyvius skelbimus, juos surikiuoti pagal prognozuojamą pardavimo datą arba, kitais žodžiais, pagal jų patrauklumą ir pradiniame puslapyje pavaizduoti pačius geriausius. 
+
+\textbf{Darbo tikslas} - suformuluoti prekių pardavimo laiko progozavimo uždavinį bei sukurti ir išbandyti prototipinę sistemą naudojant giliuosius neuroninius tinklus.
+
+\vspace{3mm} %5mm vertical space
+
+\textbf{Darbo uždaviniai:}
+\begin{enumerate}
+  \item Atlikti DNT apžvalgą.% svarbu palyginti su kitomis sistemomis 
+  \item Suformuluoti prekių pardavimo prognozavimo uždavinį GN tinklams.
+  \item Sukurti prototipą ir atlikti tikslumo vertinimą.
+\end{enumerate}
+
+\textbf{Laukiami rezultatai:}
+\begin{enumerate}
+  \item Atlikta WTTE-RNN analizė.
+  \item Sukurtas DNT galintis spręsti skelbime nurodyto objekto pardavimo prognozavimo uždavinį.
+\end{enumerate}
+
+Tyrimo procese teorija tiesiogiai rišis su praktika. Bus iškeliami praktiniai tikslai, pradedant nuo smulkių, kurių siekiant, bus gilinamasi į teoriją. Iteratyviai vykdant vis reikšmingesnes užduotis, tikimasi, bus pasiektas optimalus rezultatas.
+
+% Nors sukurti deramo prototipo spręsti įvardintam uždaviniui, grubiai tariant, nepavyko, darbas atvėrė galimybę stipriam žinių ir patirties pamatui susiformuoti. Dėl šio pamato tolimesnieji autoriaus tyrimai šioje srityje tūrėtų būti sėkmingesni.
+
+% Rezultatų ir išvadų dalyje turi būti aiškiai išdėstomi pagrindiniai darbo
+% rezultatai (kažkas išanalizuota, kažkas sukurta, kažkas įdiegta) ir pateikiamos
+% išvados (daromi nagrinėtų problemų sprendimo metodų palyginimai, teikiamos
+% rekomendacijos, akcentuojamos naujovės).
+% literatūra, kitokie šaltiniai. Abėcėlės tvarka išdėstomi darbe panaudotų
+% (cituotų, perfrazuotų ar bent paminėtų) mokslo leidinių, kitokių publikacijų
+% bibliografiniai aprašai.  Šaltinių sąrašas spausdinamas iš naujo puslapio.
+% Aprašai pateikiami netransliteruoti. Šaltinių sąraše negali būti tokių
+% šaltinių, kurie nebuvo paminėti tekste.
+
+% \sectionnonum{Sąvokų apibrėžimai}
+% Sąvokų apibrėžimai ir santrumpų sąrašas sudaromas tada, kai darbo tekste
+% vartojami specialūs paaiškinimo reikalaujantys terminai ir rečiau sutinkamos
+% santrumpos.
+% Prieduose gali būti pateikiama pagalbinė, ypač darbo autoriaus savarankiškai
+% parengta, medžiaga. Savarankiški priedai gali būti pateikiami ir
+% kompaktiniame diske. Priedai taip pat numeruojami ir vadinami. Darbo tekstas
+% su priedais susiejamas nuorodomis.
+
+\end{document}
