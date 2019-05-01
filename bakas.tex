@@ -1,0 +1,168 @@
+\documentclass{VUMIFPSkursinis}
+\usepackage{algorithmicx}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{bm}
+\usepackage{caption}
+\usepackage{color}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{subfig}
+\usepackage{wrapfig}
+
+% Titulinio aprašas
+\university{Vilniaus universitetas}
+\faculty{Matematikos ir informatikos institutas}
+\department{Programų sistemų katedra}
+\papertype{Kursinis darbas}
+\title{Prekės pardavimo prognozavimas iš vaizdo ir aprašymo naudojant giliuosius neuroninius tinklus}
+\titleineng{Predicting advert sale from its image and description using deep learning networks}
+\status{4 kurso 5 grupės studentas}
+\author{Ignas Bradauskas}
+\supervisor{Linas Petkevičius, J. Asist.}
+\date{Vilnius – \the\year}
+
+% Nustatymai
+%\setmainfont{Palemonas}   % Pakeisti teksto šriftą į Palemonas (turi būti įdiegtas sistemoje)
+\bibliography{bibliografija}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+
+\sectionnonum{Įvadas}
+
+
+
+Amerikos įmonė „Starbucks“ 2007-ais metais patyrė staigų pelno kritimą (nuo 1 bilijono dolerių iki 504 milijonų). 
+Buvo būtina imtis veiksmų ir įmonės valdžia nusprendė pasitelkti naujausias technologijas spręsti šiai problemai. Jie sukūrė lojalumo programą, dovanų kortelių programą ir, turbūt svarbiausia, elektroninę parduotuvę „store.starbucks.com“. \cite{ElCom}
+Šis ankstyvus modernizavimasis lėmė įstaigos sėkmę ir leido jai tapti viena garsiausių kavos įmonių pasaulyje. Kiti
+pasaulio mažmeninės prekybos verslai irgi neatsilieka ir pradeda naudoti interneto teigiamas paslaugas. Naujausi statistiniai duomenys
+teigia, jog elektoroninė komercija (e-komercija) sudaro apie 9,5\% JAV mažmeninės prekybos rinkos dalies ir prognozuojama, jog ši dalis toliau sparčiai augs. Nuo ketivtojo 2017-tųjų ketvirčio iki pirmojo 2018-tųjų ji išaugo \textit{3,9\%  (±0.7\%)}.  \cite{US}  Iš duomenų matoma, jog prekyba internetu, šiais laikais, yra kaip niekad aktuali ir sparčiai auganti, bet, nepaisant jos sėkmės, e-komercija taip pat turi savų problemų ir niuansų. Keletas jų bus bandoma išspręsti šio darbo eigoje pasitelkiant dirbtinius neuroninius tinklus (DNT). Darbas susitelks į skelbimų rinką ir jos problemas, bus imamas konkretus pavyzdys „Autogidas“. 
+
+Turbūt kiekvienam, kažkada kūrusiam skelbimą, buvo kilę abejonių dėl parduodamo objekto vertės ir konkurencingumo rinkoje. Tokiu atveju vartotojas
+privalo skirti laiko einamųjų kainų analizavimui, kad galėtų susidaryti šiokį tokį bendrą rinkos vaizdą ir numatyti prekės vertę bei nujausti sukurto skelbimo kokybę. Ši problema yra seniai žinoma ir „Autogidas“ jau yra sukūręs jai savo sprendimą. Populiariausias automobilių skelbimų portalas Lietuvoje formule paskaičiuoja mašinos vertę atsižvelgiant į jos parametrus palyginus su rinkoje esamų kitų automobilių. Tada vartotojui išvedama mašinos rekomenduojama kaina ir jis paskatinamas pildyti skelbimą. Šio sprendimo silpnosios vietos yra tas faktas, kad visiškai neatsižvelgiama į nuotraukas ir tai, kad jis yra gana nepaslankus.
+
+Kita problema būtų iš puslapio administracijos pusės. Siekiant išlaikyti gerą vardą ir kokybišką turinį portalo vadovybė gali turėti norą demonstruoti patraukliausius skelbimus savo pradiniame puslapyje. Visgi, jeigu vartotojas atvertęs vieną puslapį mato labiau viliojančius pasiūlymus negu atvertęs kitą, jis turbūt norės lankytis geriasniame. Šią problemą būtų galima spręsti pradiniame puslapyje rodant populiariausius skelbimus, bet akivaizdu, jog tai yra ne itin našu. Kad skelbimas taptų populiarus jį pirma turi peržiūrėti daug vartotojų, o visi tie vartotojai matys prastesnį pradinį puslapį.
+
+Šias problemas ir daugiau jų galėtų spręsti DNT, kurio modulį sudarytų konvoliucinis neuroninis tinklas (CNN) skirtas vaizdų analizei sujungtas su pilnai sujungtu neuroniniu tinklu (FNN) skirtu apdoroti kitų parametrų ivestį ir CNN išvestį. DNT apsimokinti panaudotų istorinius skelbimų duomenis. Tinklas apdorotų šią informaciją ir jo išvestis būtų prognozė kada objektas bus parduotas. Tokį rezultatą būtų patogu pritaikyti spręsti prieš tai išvardintus uždavinius. Pavyzdžiui DNT galėtų apdoroti visą, įskaitant nuotraukas, vartotojo sukurtą skelbimą ir pateikti prognozę kada tikėtiniausiai bus parduota jo mašina. Išsprendžiamas ir administratoriaus poreikis. Sistema galėtų paimti visus aktyvius skelbimus, juos surikiuoti pagal prognozuojamą pardavimo datą arba, kitais žodžiais, pagal jų patrauklumą ir pradiniame puslapyje pavaizduoti pačius geriausius. 
+
+\textbf{Darbo tikslas} - suformoluoti prekių pardavimo laiko progozavimo uždavinį bei sukurti ir išbandyti prototipinę sistemą naudojant giliuosius neuroninius tinklus.
+
+\vspace{3mm} %5mm vertical space
+
+\textbf{Darbo uždaviniai:}
+\begin{enumerate}
+  \item Atlikti DNT apžvalgą.% svarbu palyginti su kitomis sistemomis 
+  \item Suformuluoti prekių pardavimo prognozavimo uždavinį GN tinklams.
+  \item Sukurti prototipą ir atlikti tikslumo vertinimą.
+\end{enumerate}
+
+Darbo autorius naudos tensorflow karkasą kurti modeliui, taip pat bus naudojamos python beautiful soup ir TorRequest bibliotekos kurti interneto gremžėją \textit{(angl. web scrapper)}. 
+
+\section{Metodologinė dalis}
+% Medžiagos darbo tema dėstymo skyriuose pateikiamos nagrinėjamos temos detalės:
+% pradinė medžiaga, jos analizės ir apdorojimo metodai, sprendimų įgyvendinimas,
+% gautų rezultatų apibendrinimas. Šios dalies turinys labai priklauso nuo darbo
+% temos. Skyriai gali turėti poskyrius ir smulkesnes sudėtines dalis, kaip
+% punktus ir papunkčius.
+
+% Medžiaga turi būti dėstoma aiškiai, pateikiant argumentus. Tekstas dėstomas
+% trečiuoju asmeniu, t.y. rašoma ne „aš manau“, bet „autorius mano“, „autoriaus
+% nuomone“. Reikėtų vengti informacijos nesuteikiančių frazių, pvz., „...kaip jau
+% buvo minėta...“, „...kaip visiems žinoma...“ ir pan., vengti grožinės literatūros
+% ar publicistinio stiliaus, gausių metaforų ar panašių meninės išraiškos
+% priemonių.
+
+
+\subsection{Į priekį sklindančių neuroninų tinklų analizė}
+
+\subsection{Konvoliucinių (sąsukinių) neuroninių tinklų analizė}
+
+\subsection{ResNet analizė}
+
+\subsection{Žinių perdavimas}
+
+\subsection{USE analiz}
+
+
+\subsection{WTTE-RNN analizė}
+
+Šiame skyriuje bus atliekama WTTE-RNN modelio analizė. Skyriaus pradžioje bus pamenami ir trumpai apibūdinami pagrindiniai tinklui suprasti reikalingi mechanizmai ir konceptai. 
+
+Šio modelio pagrindinis tikslas yra analizuoti visus objekto įvykius iki lemtingojo įvykio užbaigiančio tiriamo objekto aktualumą (mirtis, pardavimas, sugedimas) ir pagal juos sugeneruoti distribuciją. Ji yra sudaroma pagal formulę, kuriai reikia dviejų parametrų \textit{alfa} ir \textit{beta}. Nuo šių dviejų parametrų priklauso distribucijos forma. Tai galima tarti, jog DNT turi sugeneruoti šiuos du parametrus. Gero tinklo rezultatas turėtų būti distribucija turinti didžiają dalį ploto arčiau dabarties, būtent tiems objektams, kuriems labai greitai atsitiks lemtingas įvykis. O tiems, kurie nesusidurs su lemtingu įvykiu dar ilgai, turėtų būti sugeneruojama labai ploksčia distribucija.  Ją turint apskaičiuoti prognozę yra itin nesudėtinga.
+
+% Praktikos dalyje papasakoti kad aprašytas wtte naudojamas duomenų rinkinys netobulai sueina su manuoju.
+Besigilinant į šį modelį didžiaja dalimi bus remimasi Egil Martinsson magistriniu darbu „WTTE-RNN : Weibull Time To Event Recurrent Neural Network“. Šis darbas daugiau dėmesio skiria \textit{nelemiamiems} įvykiams, t.y. rekurentiniams. Toki įvykiai nesustabdo tiriamo objekto gyvavimo, jie gali nuolatos atsitikti jo egzistavimo metu. Įvykiai sustabdantys objekto egzistavimą laikomi išskirtiniais. Turint tai omenyje, galime teigti, kad tinklas tinkamas tokiems uždaviniams kaip: mirties laiko prognozė, prietaiso gedimo laiko prognozė ir objekto pardavimo prognozė. Pastarasis uždavinys bus detaliau aptariamas tolimesniuose darbo skyriuose.
+
+Minėtieji rekurentiniai įvykiai yra svarbus informacijos šaltinis WTTE-RNN tinklui, jie taip pat suteikia galimybę apmokinimui panaudoti duomenis, kurie vadimani cenzūruotais. Toki duomenys išreiškia, kad įvykis dar neįvykęs, bet mes galime būti tikri, jog jis bus neįvykęs bent iki dabar. Geras to pavyzdys būtų žmogaus prekių pirkimo duomenys. Tai yra, mes nežinome kiek laiko praeis iki kol vartotojas nusipirks naują prekę, bet mes žinome, kad bus praėję bent tiek laiko kiek praėjo nuo vartotojo praeitos prekės nusipirkimo iki dabar. WTTE-RNN tinklo autorius argumentuoja, jog duomenys apie įvykio nebuvimą yra svarbi bendro duomenų rinkinio dalis. Pasak jo, tinklas pasieks daug geresnius rezultatus jeigu bus apmokinamas cenzūruotais ir necenzūruotais duomenimis.
+
+Atsižvelgiant į tai ar objekto duomenys yra cenzūruoti ar necenzūruoti tinklas turi naudoti skirtingas aktyvacijos funkcijas ir skirtingas \textit{loss} funkcijas. [] Jeigu duomenys necenzūruoti ir įvykis 
+
+\subsubsection{Weibull distribucija}
+
+
+
+\section{Tiriamoji dalis}
+
+\subsection{Siūlomas modelis}
+
+\subsection{Duomenų rinkinio sudarymas}
+
+\subsubsection{Duomenų gavimas}
+
+\subsubsection{Duomenų apdorojimas}
+
+\subsection{Modelio kūrimas}
+
+\sectionnonum{Rezultatai ir išvados}
+
+% Nors sukurti deramo prototipo spręsti įvardintam uždaviniui, grubiai tariant, nepavyko, darbas atvėrė galimybę stipriam žinių ir patirties pamatui susiformuoti. Dėl šio pamato tolimesnieji autoriaus tyrimai šioje srityje tūrėtų būti sėkmingesni.
+
+% Rezultatų ir išvadų dalyje turi būti aiškiai išdėstomi pagrindiniai darbo
+% rezultatai (kažkas išanalizuota, kažkas sukurta, kažkas įdiegta) ir pateikiamos
+% išvados (daromi nagrinėtų problemų sprendimo metodų palyginimai, teikiamos
+% rekomendacijos, akcentuojamos naujovės).
+\printbibliography[heading=bibintoc]  % Šaltinių sąraše nurodoma panaudota
+% literatūra, kitokie šaltiniai. Abėcėlės tvarka išdėstomi darbe panaudotų
+% (cituotų, perfrazuotų ar bent paminėtų) mokslo leidinių, kitokių publikacijų
+% bibliografiniai aprašai.  Šaltinių sąrašas spausdinamas iš naujo puslapio.
+% Aprašai pateikiami netransliteruoti. Šaltinių sąraše negali būti tokių
+% šaltinių, kurie nebuvo paminėti tekste.
+
+% \sectionnonum{Sąvokų apibrėžimai}
+\sectionnonum{Santrumpos}
+
+
+\begin{enumerate}
+  \item DNT - dirbtinis neuroninis tinklas \textit{(angl. artificial neural network)} tai tarpusavyje sujungtų mazgų grupė primenanti smegenų neuronų tinklą.
+  \item CNN - konvoliucinis neuroninis tinklas \textit{(angl. convolutional neural network)} tai neuroninių tinklų klasė, dažniausiai naudojama vaizdų analizei.
+  \item ResNet - giliusis liekaninis tinklas \textit{(angl. residual neural network)} tai DNT išsiskiriantis naudojamais sujungimais skirtais praleisti sluoksnius.
+  \item FNN - į priekį sklendantis neuroninis tinklas \textit{(angl. feedforward neural network)} tai neuroninis tinklas kurio kievienas mazgas, yra sujungtas su prieš tai esančio sluoksnio kiekvienu mazgu. Jame mazgų jungtys nesuformuoja ciklo, informacija sklinda tiktai į priekį.
+  \item Išeigos požymių žemėlapis \textit{(angl. output feature map)} - tai konvoliucinio sluoksnio filtro rastų požymių rinkinys.
+  \item Konvoliucinis sluoksnis \textit{(angl. convolutional layer)} - tai vienas iš CNN sluoksnių.
+  \item API \textit{(application programing interface)} - rinkinys protokolų, subrutininių definicijų ir įrankių skirtų kurti programinę įrangą.
+  \item GDPR \textit{(angl. general data protection regulation)} - duomenų privatumo apsaugos aktas taikomas kiekvienam žmogui Europos Sąjungoje.
+  \item SVM \textit{(angl. support vector machine)} - mokinimo su mokytoju DNT modelis, kuris naudoja paraminius vektorius \textit{(angl. support vectors)}, o ne sluoksnių metodą.
+  \item TOR \textit{(angl. the onion router)} - anoniminį naršymą įgalinantis protokolas gebantis dinamiškai keisti IP adresą.
+  \item DDOS \textit{(angl. denial of service attack)} - kibernetinės atakos būdas peremtas dideliu duomenų srautu.
+  \item GN - gilusis neuroninis.
+\end{enumerate}
+% Sąvokų apibrėžimai ir santrumpų sąrašas sudaromas tada, kai darbo tekste
+% vartojami specialūs paaiškinimo reikalaujantys terminai ir rečiau sutinkamos
+% santrumpos.
+
+\appendix  % Priedai
+% Prieduose gali būti pateikiama pagalbinė, ypač darbo autoriaus savarankiškai
+% parengta, medžiaga. Savarankiški priedai gali būti pateikiami ir
+% kompaktiniame diske. Priedai taip pat numeruojami ir vadinami. Darbo tekstas
+% su priedais susiejamas nuorodomis.
+\section{Sukurtų aplikacijų ir duomenų rinkinio repozitorija}
+
+https://github.com/ignas-mif/Kursinis2018
+
+\end{document}
