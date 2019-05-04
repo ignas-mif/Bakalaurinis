@@ -92,14 +92,91 @@ Siekiant geriau suprasti esamų sistemų atliekančių prekių pardavimo analiz�
 
 \subsection{Į priekį sklindančių neuroninų tinklų analizė}
 
+Bendrai tariant, DNT gali būti skirstomi į dvi pagrindines kategorijas. Pirmojoje, vadinamoje FNN  \textit{(angl. feedforward neural network)}, neuronai siunčia savo išvestį tiktrai priekį esantiems sluoksniams (žr. 1 pav.). Antroji kategorija būtų RNN \textit{(angl. recurrent neural network)}, kurios neuronai gali siųsti informacija kitiems neuronams esantiems savo sluoksnyje, neuronams esantiems prieštai esančiame sluoksnyje ir net patiems sau. Toliau RNN nagrinėjami nebus. 
+
+FNN yra DNT, kuriame jungtys tarp neuronų nesuformuoja ciklo \cite{FNNGer, Overview}. Juose neuronai tiesiog siunčia savo išvestį į priekį, toliau esantiems sluoksniams (žr. 1 pav.). 
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.8]{img/simplenn}
+  \caption{ Paprastas DNT, susidedantis iš įvesties sluoksnio, dviejų paslėptųjų sluoksnių ir išvesties sluoksnio \cite{Nont}}.
+  \label{img:simplenn}
+\end{figure}
+
 \subsection{Konvoliucinių (sąsukinių) neuroninių tinklų analizė}
 
+Pats pirmas DNT pasiekęs žmogaus gebėjimus prilygstantį rezultatą ranka rašytų skaitmenų atpažinime, MNIST duomenų rinkinyje, buvo CNN \cite{MnistBest}. Šiais laikais konvoliucinių neuroninių tinklų architektūrinis modelis ženkliai pranoksta savo konkurentus vaizdų analizės srityje. Šis DNT išsiskiria tuo, kad naudoja filtrų seką ant grynųjų iliustracijų pixelių duomenų, siekiant išgauti aukštesniojo lygio požymius. Juos išmokus modelis naudojamas klasifikavimui. CNN susideda iš trijų dalių: 
+
+\begin{enumerate}
+  \item \textbf{Konvoliuciniai sluoksniai}, kūrių pagrindinis skirtumas nuo pilnai sujungtųjų sluoksnių yra tas faktas, kad jų kiekvienas neuronas yra sujungtas tiktai su mažu lokaliu prieš tai esančio sluoksnio neuronų poaibiu. Juose iliustracijos pereina per tam tikrą skaičių filtų. Kiekvienam subregionui (žr. pav. 2) sluoksnis pritaiko matematinių operacijų rinkinį siekiant gauti reikšmę išeigos požymių žemėlapyje \textit{(angl. output feature map)}. Konvoliuciniai sluoksniai tada paprastai pritaiko ReLU aktyvacijos funkciją savo išeigai. 
+  
+  \begin{figure}[H]
+    \centering
+    \includegraphics[scale=1]{img/conv}
+    \caption{ Konvoliucinio sluoksnio neuronas atlieka konvoliucijos operaciją 3x3 laukui \cite{Nont}}.
+    \label{img:conv}
+  \end{figure}
+  
+  \item \textbf{Telkimo sluoksniai} \textit{(angl. pooling layers)}, kurie, iš prieš tai esančių sluoksnių gautą informaciją suagreguoja į reikšmių poaibį, taip ženkliai sumažinant reprezentacijos dimencionalumą \cite{Pooling}. Telkimo sluoksnio paskirtis - sumažinti CNN sudėtingumą. 
+
+  Panašiai kaip konvoliuciniuose sluoksniuose, neuronai esantys telkimo sluoksnyje yra sujungti su kvadrado formos regionu. Pagrindinis skirtumas tarp konvoliucinio sluoksnio ir telkimo sluoksnio yra tai, kad telkimo sluoksnis nėra parametrizuotas. Tai reiškia, jog neuronai esantys telkimo sluoksnyje neturi hiperparametų, kurie gali būti koreguojami mokymo proceso eigoje. Vietoj to yra naudojama statinė funkcija sluoksnio įeigai.
+
+  Vienas iš dažniausiai naudojamų telkimo tipų yra maksimalaus telkimo tipas. Tai metodas, kurio metu įvesties matricoje surandama didžiausia reikšmė ir išvedama tik ji. Taip pašalinamos likusios matricos reikšmės ir išvestis būna, duomenų kiekiu, mažesnė negu įvestis (žr. 3 pav).
+
+  \begin{figure}[H]
+    \centering
+    \includegraphics[scale=1]{img/pooling}
+    \caption{Telkimo sluoksnis atliekantis maksimalaus telkimo \textit{(angl. max pooling)} operaciją \cite{Nont}.}
+    \label{img:pooling}
+  \end{figure}
+
+
+  \item \textbf{Pilnai sujungtieji sluoksniai}, kurie atlieka klasifikavimą požymiams, gautiems iš konvoliucinių sluoksnių, supaprastintiems telkimo sluoksnių. Šie sluoksniai atitinka FNN struktūrą, t.y. kiekvienas mazgas yra sujungtas su prieš jo sluoksnį esančio sluoksnio kiekvienu mazgu. \cite{TFMnist}
+\end{enumerate}
+
+Paprastai, CNN yra sudarytas iš konvoliucinių modulių rinkinio, kuris atlieka požymių išgavimą. Kiekvienas modulis susidaro iš konvoliucinio sluoksnio ir įkandin sekančio telkimo sluoksnio. Paskutinysis konvoliucinis modulis priekį savęs turi vieną arba keletą pilnai sujungtųjų sluoksnių kurie atlieka klasifikavimo funkciją. Paskutinysis pilnai sujungtasis sluoksnis savyje turi po vieną mazgą kiekvienai klasifikavimo kategorijai atsovauti. Sugeneruoti vertę nuo nulio iki vieneto šis mazgas naudoja švelnaus maksimumo aktyvacijos funkciją \textit{(angl. softmax function)}. Visų švelnaus maksimumo sugeneruotų reikšmių suma yra lygi vienetui. Mes galime interpretuoti švelnaus maksimumo reikšmes kaip matavimo vienetą atspindintį nuotraukoje esančio objekto atitikimo kategorijai tikimybę. \cite{TFMnist} Švelnaus maksimumo funkcija atrodo taip: 
+
+\begin{equation}
+  \delta(z)_j=\frac{e^{z_j}}{\sum_{k=1}^K e^{z_k}}, j = 1, …, K 
+\end{equation}
+
+, kai K - įeigos vektorius dimencijos, z - įeigos vektorius,  j - įeigos vektoriuje esančio skaičiaus indeksas.
 \subsection{ResNet analizė}
+
+Gilieji tinklai natūraliai sėkmingai išgauna žemojo, vidutiniojo ir aukštojo lygio požymius naudojant daugiasluoksnį architektūrinį stilių. Neseniai padaryti tyrimai atskleidžia, jog tinklo gylis (sustatytų sluoksnių skaičius) yra itin svarbus faktorius tinklo sėkmingumui \cite{VDCN, VDCN2}. 
+
+2015 metais buvo sukurta naujo tipo architektūra, kuri dar labiau peržengė DNT gylio ribas \cite{REDNT}. Tinklas vadinamas giliuoju liekaniniu tinklu \textit{(angl. Deep Residual Network)}, trumpai - ResNet. Šis tinklas pasiekia itin gerus rezultatus turint gilią architektūrą. ResNet konvoliuciniai sluoksniai sugrupuojami į liekaninius blokus ir kiekvienam blokui duodama liekaninė jungtis, kurios tikslas apeiti minėtąjį liekaninį bloką (žr. pav. x). 
+
+Pridedant liekaninių jungčių gaunamas kelias atgaliniam ryšiui leidžiantis tiesiogiai pasiekti ankstesnius sluoksnius. Iš to išplaukia tai, kad galime kurti tinklus esančius daug gilesnius negu paprastieji DNT. Seniau, didesnis sluoksnių kiekis nebūtinai reiškė, jog bus pasiektas geresnis tikslumas. To priežastis tokia, jog, tinklui būnant perdideliam, ansčiau esantys sluoksniai negalėdavo deramai prisitaikyti. ResNet architektūra šią problemą išsprendžia. \cite{Nont}
+
+Tinklo sėkmingumas įrodytas ILSVRC lokalizacijos ir clasifikavimo konkurso bei COCO aptikimo ir segmantavimo iššukio laimėjimu. 
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.8]{img/resblock}
+  \caption{Liekaninis blokas, susidedantis iš dviejų konvoliucinių sluoksnių ir jį apeinančios liekaninės jungties. Liekaninio blogo įvestis (x) persiunčiama liekaninės jungties ir vėliau pridedama prie bloko rezultato (f(x)) siekiant gauti galutinį išvedinį (f(x) + x) \cite{Nont}}
+  \label{img:resblock}
+\end{figure}
 
 \subsection{Žinių perdavimas}
 
-\subsection{USE analiz}
+Praktikoje labai retai treniruojamas visas konvoliucinis tinklas nuo pradžios iki galo, nes yra gana reta turėti pakankamai didelį duomenų rinkinį. Vietoje to, dažna praktika yra iš anksto ištreniruoti CNN ant labai didelio duomenų rinkinio (pvz.: ImageNet, turinčio virš 14 milijonų iliustracijų ir 1000 skirtingų kategorijų), ir tada ištraukti iš jo požymius. Ištraukti požymiai naudojami apmokinti tinklą norimai užduočiai vykdyti \cite{Cal}. 
 
+Egzistuoja trys pagrindiniai žinių perdavimo scenarijai:
+
+\begin{enumerate}
+  \item Butelio kaklo požymių ištraukimas. Šiuo atveju paimamas iš anksto ištreniruotas CNN, pašalinamas jo paskutinis pilnai sujungtasis sluoksnis (šis sluoksnis skirtas klasifikavimui, jame iliustracijai priskiriama viena iš kategorijų), tada likes CNN naudojamas kaip požymių išgavėjas naujam duomenų rinkiniui \cite{Cal}. Požymių išgavėjas tada generuotų didelio ilgio vektorių kiekvienai iliustracijai, kurie būtų naudojami apmokinti prijungtą modelį skirtą klasifikuoti.
+  \item CNN sureguliavimas \textit{(angl. Fine-tunning)}. Antroji strategija yre nevien tiktai aukščiausiojo sluoksnio pakeitimas, bet ir iš anksto treniruotojo CNN svorių reguliavimas. Yra įmanoma sureguliuoti visus CNN svorius arba galima palikti keletą ankstyjųjų sluoksnių nepaliestų (su tikslu išvengti permokymo) ir reguliuoti tam tikrą skaičių aukštesniųjų sluoksnių. To priežastis yra pastebėjimas, jog ankstesniesi CNN sluoksniai išgauna labiau abstraktesnius požymius (pavyzdžiui, kraštai ar spalvų dėmes) kas yra gan naudinga dideliam kiekiui užduočių spręsti. Bet tolimesni sluoksniai tampa vis konkretesni duomenų rinkinio klasių detalėms atpažinti.
+  \item Iš anksto ištreniruotieji modeliai. Kadaingi ImageNet duomenų rinkiniui, net naudojant keletą GPU, ištreniruoti šiuolaikinį CNN užtrunka nuo dviejų iki trijų savaičių, dažna praktika yra patalpinti savo paskutinįjį kontrolinį tašką \textit{(angl. checkpoint)} internete kitiems žmonėms parsisiųsti ir reguliuoti.
+\end{enumerate}
+
+\subsection{USE analizė}
+
+Šiame skyriuje bus aprašomas Google mokslininkų sukurtas universalus sakinių užkoduotojas \textit{(angl. Universal Sentence Encoder)}. Toliau šis pavadinimas bus trumpinamas USE akronimu.  
+
+Gauti duomenų tinklo treniravimui paprastai yra problemų sukelianti užduotis. To pasekoje duomenų mokslininkai susiduria su iššukiu bemokinant daug duomenų reikalaujančius DNT. Dažnai tenka didelią dalį laiko duomenis gremžti iš interneto ar juos bandyti gauti iš trečiųjų šalių (įvairių įmonių kaupiančių duomenis). Taip pat, svarbu paminėti, kad sukurti gerus rezultatus teikiantį tinklą reikia įdėti daug laiko, pastangų ir resursų. Geras būdas išvengti visų šių problemų yra pasinaudoti iš anksto apmokintu tinklu ir perduoti jo žinias savąjąm. 
+
+Tokį sprendimą siūlo Google USE komanda. Šis modelis teksto sakinius konvertuoja į skaičių vektorius, kurie specifiškai pritaikyti žinių perdavimo užduočiai. Panašiai kaip ir prieš tai ResNet iš anksto apmokintas modelis, šis užkoduotojas 
 
 \subsection{WTTE-RNN analizė}
 
@@ -157,13 +234,24 @@ Skirstiniai apibūdina dydžių pasiskirstymo dėsnį. Tai reiškia, kad jie par
 
 Skirstinių generavimo formulės paprastai turi keletą parametrų skirtų nustatyti jo formą. Šie pasiskirstymo dėsniai taip pat turi keletą svarbių aptarti sąvokų. Aktualiausia darbui iš jų yra \textit{kvantilis}, bet pradėkime ne nuo jo, nes jį paaiškinti taps elementariau žinant apie Culmulative Distribution Function (toliau CDF). 
 
-CDF funkcija apskaičiuoja tikimybę, kad kintamasis įgaus reikšmę mažesnę arba lygią x. Tai yra, jeigu skirstinys atspindi žmonių ugių pasiskirstymą, tai CDF apskaičiuotų kokia tikimybė, jog atsitiktinis žmogus bus mažesnio arba lygaus x ūgiui. 
+CDF funkcija (žr. pav. x) apskaičiuoja tikimybę, kad kintamasis įgaus reikšmę mažesnę arba lygią x. Tai yra, jeigu skirstinys atspindi žmonių ugių pasiskirstymą, tai CDF apskaičiuotų kokia tikimybė, jog atsitiktinis žmogus bus mažesnio arba lygaus x ūgiui. 
 
-Čia paveiksliukas.
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.8]{img/WeibulCDF}
+  \caption{ Weibul CDF funkcija kai λ=5; k=5.}
+  \label{img:WeibulCDF}
+\end{figure}
 
-Kvantilis yra apskaičiuojamas su Present Point Function (toliau PPF). Ši funkcija yra invertuota CDF funkcija, todėl ji dažnai literatūroje apibūdinama kaip invertuota distribucijos funkcija. Tokia būsena reiškia, jog funkcija pradeda nuo tikimybės ir, turint ją, apskaičiuoja x. Prisimenant prieš tai aptartą ūgių pavyzdį, jį galime pritaikyti šiai funkcijai. Tai yra, jeigu skirstinys atspindi žmonių ūgių pasiskirstymą, tai PPF funkcija galėtų paskaičiuos iki kokio ūgio yra x\% procentų žmonių. Ši sąvoka bus naudojama tolimesniuose skyriuose skaičiuoti per kiek dienų objektas bus parduotas su x\% tikimybe.
+Kvantilis yra apskaičiuojamas su Present Point Function (toliau PPF). Ši funkcija (žr. pav. x) yra invertuota CDF funkcija, todėl ji dažnai literatūroje apibūdinama kaip invertuota distribucijos funkcija. Tokia būsena reiškia, jog funkcija pradeda nuo tikimybės ir, turint ją, apskaičiuoja x. Prisimenant prieš tai aptartą ūgių pavyzdį, jį galime pritaikyti šiai funkcijai. Tai yra, jeigu skirstinys atspindi žmonių ūgių pasiskirstymą, tai PPF funkcija galėtų paskaičiuos iki kokio ūgio yra x\% procentų žmonių. Ši sąvoka bus naudojama tolimesniuose skyriuose skaičiuoti per kiek dienų objektas bus parduotas su x\% tikimybe.
 
-Čia paveiksliukas.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.8]{img/WeibulPPF}
+  \caption{  Weibul CDF funkcija kai λ=5; k=5.}
+  \label{img:WeibulPPF}
+\end{figure}
 
 Svarbu paminėti, kad yra sukurti kelių tipų skirstiniai. Galima atspėti, kad originaliame Egil Martinsson straipsnyje, kuriuo stipriai remimasi šiame darbe, buvo remimasi Weibull skirstiniu. Pasak WTTE-RNN autoriaus, šis skirstinys taip pat pasižymi kitomis savybėmis padarančiomis jį itin tinkamu:
 
@@ -175,7 +263,15 @@ Svarbu paminėti, kad yra sukurti kelių tipų skirstiniai. Galima atspėti, kad
   \item Kt.
 \end{enumerate}
 
-Weibull skirstinys dažnai naudojamas išgyvenimo analizėje ir patikimumo inžinerijoje, bet jis nevienintelis. Kiti šiose srityse dažnai naudojami skirstiniai yra: exponentinis, Log-logistinis, Exponentinis-logaritminis, gamma, Rayleigh, Erlang. Tinklui aprašomam kituose skyriuose galima pritaikyti ne tiktai Weibull skirstinį.
+Weibull skirstinys dažnai naudojamas išgyvenimo analizėje ir patikimumo inžinerijoje, bet jis nevienintelis. Kiti šiose srityse dažnai naudojami skirstiniai yra: exponentinis, Log-logistinis, Exponentinis-logaritminis, gamma, Rayleigh, Erlang. Tinklui aprašomam kituose skyriuose galima pritaikyti ne tiktai Weibull skirstinį. Visi skirstiniai turi skirtingas savybes ir skirtingai tinkami specifiniems atvejams. Norint pamatyti kaip skirtingi parametrai paveikia skirtingus skirstinius, autorius sukūrė Weibull ir Gamma skirstinių grafinį palyginimą (žr. pav. x).
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.8]{img/WeibulVsGamma}
+  \caption{  Paveiklėlio legendose matomi parametrai k - forma; θ, λ - mastelis. Grafikuose matomos histogramos atspindi pagal skirstinius sugeneruotus atsitiktinius duomenis. }
+  \label{img:WeibulVsGamma}
+\end{figure}
+
 
 \section{Tiriamoji dalis}
 
@@ -186,15 +282,119 @@ Tiriamojoje dalyje bus peržvelgiami abiejų sukurtųjų tinklų modeliai, treni
 
 \subsection{Siūlomas modelis}
 
+DNT skirtas spręsti tokį uždavinį turėtų gebėti vykdyti vaizdų analizę. Atsižvelgiant į tai, kad geriausiai vaizdų analizę atlieka CNN, pernaudosime ne ką kitą, bet didelio pasisekimo sulaukusį ResNet modelį, kuris naudoja konvoliucinius sluoksnius ir turi itin didelį gylį. Tai yra pritaikysime butelio kaklo požymių ištraukimo metodą jau esamam ResNet kontroliniam taškui. Tuomet, apmokinsime tinklą pagal savo sutelkto duomenų rinkinio iliustracijas, prijungsime gautą modelį prie FNN tinklo, kuris pagal gautus duomenis generuos \textit{alfa} ir \textit{beta} paremetrus distribucijos \textit{loss} formulei. Prijungimo žingsnyje taip pat bus pridedami kiti parametrai, kaip kuro tipas, kaina, pagaminimo data, aprašymas, kėbulo tipas ir dar keletas kitų. Svarbu paminėti, kad aprašymo duomenys į tinklą bus įtraukiami su USE modelio pagalba. USE užkoduotojas skelbimų aprašymus pavers į skaičių vektorius. Šie vektoriai tada bus prijungiami prie kitų duomenų, tokiu pačiu principu kaip ir ResNet permokinto modelio išvestis. Naudojamas ResNet tinklas turės penkiasdešim sluoksnių, o FNN tinklą sudarys x sluoksniai. FNN tinklo paskutiniojo sluoksnio išvesčiai bus taikoma specialiai pritaikyta \textit{loss} funkcija, kuri ir generuos dvejus reikalingus parametrus sukurti skirstinį. Turint skirstinius, bus galima paskaičiuoti kiekvienam iš jų kvantilį ir gauti iki kurios dienos objektas bus parduotas su pasirinkta tikimybe.
+
+Siekiant susidaryti tinklo sėkmingumo įvertinimą, taip pat buvo sukurtas modelis turintis itin panašią architektūrą. Pagrindinis palyginimui sukurto modelio skirtumas, jo paskutinysis sluoksnis turi vieną išvesties neuroną ir taiko paprastą \textit{loss} funkciją. Šis tinklas sugeneruoja rezultatą forma „Skelbimas bus parduotas per x dienas“.
+
+Turint abiejų tinklų rezultatus bus galima atlikti tikslumo palyginimą.
+
+DNT apsimokinti panaudosime istorinius skelbimų duomenis, kurių forma būtų tokia: 
+\begin{equation}
+  x_i = [nuotrauka_i; aprašymas_i, kaina_i; spalva_i; ... ; laikas_i;], i = 1, ... , N
+\end{equation}
+
+, kai x - skelbimas, i - skelbimo indeksas, N - bendras skelbimų kiekis.
+
+% Tikslinga būtų paminėti, jog nemažai tyrimų panašias problemas sprendžia naudodami SVM \cite{IMGPOP,IMGPOP3,IMGPOP4}. Šiame metode kiekvienas duomenų vienetas reprezentuojamas n dimencijų grafike (n atstoja požymių skaičių), kur kiekvieno požymio vertė atstoja kordinatę. Tada klasifikavimas atliekamas randant hiper plokštę \textit{(angl. hyper-plane)}, kuri atskirtia klases minėtame grafike.
+
+% Tai nėra stebinantis atradimas turint omenyje, kad yra atlikta tyrimų teigiančių, jog SVM architektūra gali pasiekti rezultatus prilygtančius standartiniam CNN (žr. pav 5) \cite{IMGPOP5}. Bet svarbu pastebėti, jog galima to priežastis yra tas faktas, kad tų tyrimo rašymo metu dar nebuvo sukurtas ResNet.
+
+% \begin{figure}[H]
+%   \centering
+%   \includegraphics[scale=0.8]{img/stats}
+%   \caption{Skirtingų modulių atpažinimo sėkmingumas skirtingiems duomenų rinkiniams}
+%   \label{img:stats}
+% \end{figure}
+
+% Tas pats tyrimas perša idėją, jog dažnai visoms problemoms spręsti ir pasiekti maksimalų veiksmingumą naudojami neuroninai tinklai ir, kad rezultatai indikuoja, jog tikroji šios technologijos galia yra išgauti požymiuis. Pasak tyrimo autorių, vertėtų suderinti DNT ir kitus mokinimosi modelius, vietoje tiktai grynų DNT naudojimo. Toks modelis skirtūsi nuo autoriaus kurto, nes šiam darbui buvo naudojamas pilnai neurorinis tinklas. Potencialiai jis turėtų būti greitesnis, bet tai išlieka neaišku, nes tyrime nebuvo lyginami būtent ResNet tinklai su SVM + FNN tinklais.
+
 
 
 \subsection{Duomenų rinkinio sudarymas}
 
+Prototipo kūrimo eiga prasidėjo nuo duomenų rinkinio gavimo. Norint, kad duomenys būtų kiek įmanoma tikslesni ir atspindėtų tikrovę buvo galimi du tolimesnių veiksmų variantai iš kur juos įgyti. Tai yra:
+
+\begin{enumerate}
+  \item Buvo galima sukurti aplikaciją nuolatos tikrinančią skelbimų portalų skelbimų informaciją.
+  \item Buvo galima paprašyti skelbimų portalų administracijos pasidalinti duomenimis. 
+  \item Buvo galime duomenis dalinai susimuliuoti.
+\end{enumerate} 
+
+Gavus duomenis taip pat būtų reikėją juos apdoroti, kad jie būtų tinkami apmokyti DNT.
+
 \subsubsection{Duomenų gavimas}
+
+Besprendžiant užduotį buvo bandoma susitarti su keletu skelbimų įmonių ir iš jų gauti duomenų. Buvo kontaktuota ir derėtasi su „Autogidas“, „Autoplius“ ir „Vinted“.
+
+Didžiausius automobilių skelbimių telkinius Lietuvoje nepaneigiamai turi interneto portalai „Autogidas“ ir „Autoplius“, tad buvo susisiekta su jų atstovais. Po ilgo korespondavimosi, Artūras Mizeras, Autoplius.lt portalo vadovas, pasiūlė duoti 5000 skelbimų vienetų, bet matyt persigalvojo, nes bendravimas nutrūko. Autorius įtaria, jog tai yra GDPR pasėkmė, bet tai išlieka neaišku.
+
+Bakalaurinio darbo vadovo pastangomis buvo susitikta su „Vinted“ mašinų mokymo komandos vadovu Dovydu Čeilutka. Nors pradžia atrodė daug žadanti, rezultate, dėl GDPR suvaržymų „Vinted“ duomenų duoti atsisakė.
+
+Dėl fakto, jog komunikavimas su portalų atstovais užėmė didelį laiko tarpą ir dėl bendro laiko trūkumo buvo nuspręsta sukurti interneto gremžėją, kurio paskirtis būtų surinkti skelbimų informaciją, o jų pardavimo laiką tektų, pritaikius išgalvotas taisykles, susimuliuoti. Buvo tikimasi, jog jeigu tinklas sugebės perprasti autoriaus sugalvotas taisykles (negaudamas jokios informacjos apie jas) tada jis taip pat sugebės ir nustatyti tinkamus svorius tikrovės informacijai arba, kitais žodžiais, jis bus pritaikomas realiam panaudos atvejui.
+
+Priėmus sprendimą į tinklo architektūrą įtraukti USE modulį, buvo būtina pataisyti gremžėją ir taip pat surinkti automobilių skelbimų aprašymus. Gremžėjas savo darbą atliko sėkmingai ir surinko 2231 skelbimų vienetų duomenis.
 
 \subsubsection{Duomenų apdorojimas}
 
+Prieš duomenis paduodant į DNT yra būtina juos apdoroti. Vienas iš būtinų apdorojimo veiksmų yra tokių parametrų kaip spalva ar defekto buvimas išreiškimas skaitmenimis, tai vadinama \textit{one hot encoding}. Šiam tikslui įgyvendinti buvo sukurta programa, kurią galima rasti darbo prieduose nurodytoje repozitorijoje. Programa taip pat atrenka tiriamus ir netiriamus skelbimo parametrus, nes sukurtas interneto gremžėjas jų paimdavo daugiau negu reikia. Tiriami parametrai yra pagaminimo data, kaina Lietuvoje, rida, kuro tipas, kėbulo tipas, vairo padėtis, defektai, miestas. Visi šie parametrai buvo įvertinami butent jiems pritaikytų taisyklių. Dauguma jų sudaro paprastus rėžius duodančius skirtingą kiekį taškų duomenims patenkantiems ir nepatenkantiems į juos.
+
+\begin{table}[H]\footnotesize
+  \centering
+  \caption{Skelbimų pardavimų įvertinimo taisyklės.}
+  {\begin{tabular}{|l|c|c|} \hline
+    Požymis & Kriterijus & Taškai \\
+    \hline
+    Metai & > 2015         & -50       \\
+         & [2015; 2010)   & 0      \\
+         & [2010; 2005)   & 50      \\
+         & [2005; 2000]   & 100      \\
+         & < 2000   & 150      \\
+    \hline
+    Kaina & > 15000         & 150\\
+        & [15000; 10000)   & 100      \\
+        & [10000; 8000)   & 80      \\
+        & [8000; 6000)   & -30      \\
+        & [6000; 2000)   & -50     \\
+        & [2000; 1000]   & -80     \\
+        & < 1000   & -100     \\
+    \hline
+    Rida & > 400000         & 100\\
+        & [400000; 300000)   & 60      \\
+        & [300000; 200000)   & 40      \\
+        & [200000; 100000]   & -40      \\
+        & < 100000   & -60     \\
+        & Neįvardina   & 50     \\
+    \hline
+    Kuro tipas & Dyzelinas   & -20\\
+        & Benzinas   & 10      \\
+        & Kita   & -30      \\
+    \hline
+    Kėbulo tipas & Hečbekas   & -20\\
+        & Sedanas   & -30      \\
+        & Visureigis   & -10      \\
+        & Kita   & 40     \\
+    \hline
+    Vairo padėtis & Kairėje   & 0\\
+        & Kita   & 50      \\
+    \hline
+    Defektų buvimas & Yra   & 50\\
+        & Nėra   & 0      \\
+    \hline
+    Automobilio vieta & Vilnius   & -30\\
+        & Kaunas   & -20      \\
+        & Klaipėda   & -10      \\
+        & Marijampolė   & 0      \\
+        & Kita   & 30      \\
+    \hline
+  \end{tabular}}
+  \label{tab:table example}
+\end{table}
+
+Lentelėje matomi įnvertinimai už skirtingus skelbimo parametrus. Nuotraukos taip pat įvertinamos. Tai pasiekiama duodnt taškus už nuotrauką, o jie suskaičiuojami įvertinant parametrus, kurie atsispindi nuotraukose. T.y spalva, kėbulo tipas, automobilio pagaminimo data. Jeigu automobilis po įvertinimo proceso turi neigiamą kiekį taškų, jie nunulinami.
+
 \subsection{Modelio kūrimas}
+
+
 
 \sectionnonum{Rezultatai ir išvados}
 
