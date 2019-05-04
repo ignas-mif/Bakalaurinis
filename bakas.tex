@@ -174,18 +174,24 @@ Egzistuoja trys pagrindiniai žinių perdavimo scenarijai:
 
 Šiame skyriuje bus aprašomas Google mokslininkų sukurtas universalus sakinių užkoduotojas \textit{(angl. Universal Sentence Encoder)}. Toliau šis pavadinimas bus trumpinamas USE akronimu.  
 
-Gauti duomenų tinklo treniravimui paprastai yra problemų sukelianti užduotis. To pasekoje duomenų mokslininkai susiduria su iššukiu bemokinant daug duomenų reikalaujančius DNT. Dažnai tenka didelią dalį laiko duomenis gremžti iš interneto ar juos bandyti gauti iš trečiųjų šalių (įvairių įmonių kaupiančių duomenis). Taip pat, svarbu paminėti, kad sukurti gerus rezultatus teikiantį tinklą reikia įdėti daug laiko, pastangų ir resursų. Geras būdas išvengti visų šių problemų yra pasinaudoti iš anksto apmokintu tinklu ir perduoti jo žinias savąjąm. 
+Gauti duomenų tinklo treniravimui paprastai yra problemų sukelianti užduotis. To pasekoje duomenų mokslininkai susiduria su iššukiu bemokinant daug duomenų reikalaujančius DNT. Dažnai tenka didelią dalį laiko duomenis gremžti iš interneto ar juos bandyti gauti iš trečiųjų šalių (įvairių įmonių kaupiančių duomenis). Taip pat, svarbu paminėti, kad sukurti gerus rezultatus teikiantį tinklą reikia įdėti daug laiko, pastangų ir resursų. Geras būdas išvengti visų šių problemų yra pasinaudoti iš anksto apmokintu tinklu ir perduoti jo žinias savąjąm. Tokį sprendimą siūlo Google USE komanda. Šis modelis teksto sakinius konvertuoja į skaičių vektorius, kurie specifiškai pritaikyti žinių perdavimo užduočiai. 
 
-Tokį sprendimą siūlo Google USE komanda. Šis modelis teksto sakinius konvertuoja į skaičių vektorius, kurie specifiškai pritaikyti žinių perdavimo užduočiai. Panašiai kaip ir prieš tai ResNet iš anksto apmokintas modelis, šis užkoduotojas 
+Nusprendus naudoti USE, taip pat reikia priimti sprendimą kurį iš jų konkrečiai naudoti, nes jie yra du su dviejom skirtingom architektūrom. Šį sprendimą reikia priimti atsižvelgiant į iškeltus dizaino tikslus. Vienas iš USE modelių yra paremtas \textit{transformer} architektūra ir pagrindinė jo savybė yra aukštas tikslumo lygis, didesnio modelio sudėtingumo ir didesnių reikalingų resursų kaina. Kitas, sukurtas pagal \textit{deep averaging network (DAN)} architektūrą, turi intuityvesnę struktūrą su prastesniu pasiektu tikslumu. Abu modeliai yra įgyvendinti Tensorflow ir yra viešai prieinami per Tensorflow Hub.
 
 \subsection{WTTE-RNN analizė}
 
 Šiame skyriuje bus atliekama WTTE-RNN modelio analizė. Skyriaus pradžioje bus pamenami ir trumpai apibūdinami pagrindiniai tinklui suprasti reikalingi mechanizmai ir konceptai. Poskyriuose bus detaliau analizuojamos visos sąvokos. 
 
-Šio modelio pagrindinis tikslas yra analizuoti visus objekto įvykius iki lemtingojo įvykio užbaigiančio tiriamo objekto aktualumą (mirtis, pardavimas, sugedimas) ir pagal juos sugeneruoti skirstinį. Ji yra sudaroma pagal formulę, kuriai reikia dviejų parametrų \textit{alfa} ir \textit{beta}. Nuo šių dviejų parametrų priklauso skirstinio forma. Tai galima tarti, jog DNT turi sugeneruoti šiuos du parametrus. Gero tinklo rezultatas turėtų būti skirstinys turintis didžiają dalį ploto arčiau dabarties, būtent tiems objektams, kuriems labai greitai atsitiks lemtingas įvykis. O tiems, kurie nesusidurs su lemtingu įvykiu dar ilgai, turėtų būti sugeneruojamas labai ploksčias skirstinys. Ją turint apskaičiuoti prognozę yra itin nesudėtinga.
+Šio modelio pagrindinis tikslas yra analizuoti visus objekto įvykius iki lemtingojo įvykio užbaigiančio tiriamo objekto aktualumą (mirtis, pardavimas, sugedimas) ir pagal juos sugeneruoti skirstinį. Jie yra sudaroma pagal formulę, kuriai reikia dviejų parametrų \textit{alfa} ir \textit{beta}. Nuo šių dviejų parametrų priklauso skirstinio forma. Tai galima tarti, jog DNT turi sugeneruoti šiuos du parametrus. Gero tinklo rezultatas turėtų būti skirstinys turintis didžiają dalį ploto arčiau dabarties, būtent tiems objektams, kuriems labai greitai atsitiks lemtingas įvykis. O tiems, kurie nesusidurs su lemtingu įvykiu dar ilgai, turėtų būti sugeneruojamas labai ploksčias skirstinys. Ją turint apskaičiuoti prognozę yra itin nesudėtinga.
 
 % Praktikos dalyje papasakoti kad aprašytas wtte naudojamas duomenų rinkinys netobulai sueina su manuoju.
-Besigilinant į šį modelį didžiaja dalimi bus remimasi Egil Martinsson magistriniu darbu „WTTE-RNN : Weibull Time To Event Recurrent Neural Network“. Šis darbas daugiau dėmesio skiria \textit{nelemiamiems} įvykiams, t.y. rekurentiniams. Toki įvykiai nesustabdo tiriamo objekto gyvavimo, jie gali nuolatos atsitikti jo egzistavimo metu. Įvykiai sustabdantys objekto egzistavimą laikomi išskirtiniais. Turint tai omenyje, galime teigti, kad tinklas tinkamas tokiems uždaviniams kaip: mirties laiko prognozė, prietaiso gedimo laiko prognozė ir objekto pardavimo prognozė. Pastarasis uždavinys bus detaliau aptariamas tolimesniuose darbo skyriuose.
+Besigilinant į šį modelį didžiaja dalimi bus remimasi Egil Martinsson magistriniu darbu „WTTE-RNN : Weibull Time To Event Recurrent Neural Network“. Šis darbas daugiau dėmesio skiria \textit{nelemiamiems} įvykiams, t.y. rekurentiniams. Toki įvykiai nesustabdo tiriamo objekto gyvavimo, jie gali nuolatos atsitikti jo egzistavimo metu. Įvykiai sustabdantys objekto egzistavimą laikomi išskirtiniais. Turint tai omenyje, galime teigti, kad tinklas tinkamas tokiems uždaviniams kaip: mirties laiko prognozė, prietaiso gedimo laiko prognozė, objekto pardavimo prognozė ir panašiems. Pastarasis uždavinys bus detaliau aptariamas tolimesniuose darbo skyriuose.
+
+\subsubsection{Cenzūruoti duomenys}
+
+Ceuzūravimas yra viena iš ypatingųjų laukimo laikų problemų. Kartais eksperimento metu slenkantis laikas yra pačio eksperimento pamatinis elementas ir mes nevisada galime jį stebėti iki galo. Šis fenomenas vadinamas cenzūra \cite{WTTEBLOG}. 
+
+
 
 Minėtieji rekurentiniai įvykiai yra svarbus informacijos šaltinis WTTE-RNN tinklui, jie taip pat suteikia galimybę apmokinimui panaudoti duomenis, kurie vadimani cenzūruotais. Toki duomenys išreiškia, kad įvykis dar neįvykęs, bet mes galime būti tikri, jog jis buvo neįvykęs bent iki dabar. Geras to pavyzdys būtų žmogaus prekių pirkimo duomenys. Tai yra, mes nežinome kiek laiko praeis iki kol vartotojas nusipirks naują prekę, bet mes žinome, kad bus praėję bent tiek laiko kiek praėjo nuo vartotojo praeitos prekės nusipirkimo iki dabar. WTTE-RNN tinklo autorius argumentuoja, jog duomenys apie įvykio nebuvimą yra svarbi bendro duomenų rinkinio dalis. Pasak jo, tinklas pasieks daug geresnius rezultatus jeigu bus apmokinamas cenzūruotais ir necenzūruotais duomenimis. Žemiau pavaizduotame paveiksliuke parodytas pavyzdys abiejų rūšių duomenų (žr. x pav).
 
@@ -196,7 +202,7 @@ Minėtieji rekurentiniai įvykiai yra svarbus informacijos šaltinis WTTE-RNN ti
   \label{img:censored}
 \end{figure}
 
-Atsižvelgiant į tai ar objekto duomenys yra cenzūruoti ar necenzūruoti tinklas turi naudoti skirtingas skirtingas \textit{loss} funkcijas. Šios funkcijos leidžia sukurti specialiai pritaikytus skirstinius dviems skirtingiems duomenų tipams. Pavyzdžiui, necenzūruotiems duomenims sukurtas skirstinys turėtų turėti daugiausiai svorio prie įvykio (žr. pav. x), necenzūruoti duomenys turi sugeneruoti skirstinį daugiausiai ploto užimantį už užcenzūravimo taško (žr. pav. x), o necenzūruotų ir cenzūruotų duomenų mišinys turi sukurti kompromisuojantį, labiau išbalansuotą skirstinį (žr. pav. x).  
+Atsižvelgiant į tai ar objekto duomenys yra cenzūruoti ar necenzūruoti tinklas turi naudoti skirtingas \textit{loss} funkcijas. Šios funkcijos leidžia sukurti specialiai pritaikytus skirstinius dviems skirtingiems duomenų tipams. Pavyzdžiui, necenzūruotiems duomenims sukurtas skirstinys turėtų turėti daugiausiai svorio prie įvykio (žr. pav. x), necenzūruoti duomenys turi sugeneruoti skirstinį daugiausiai ploto užimantį už užcenzūravimo taško (žr. pav. x), o necenzūruotų ir cenzūruotų duomenų mišinys turi sukurti kompromisuojantį, labiau išbalansuotą skirstinį (žr. pav. x).  
 
 \begin{figure}[H]
   \centering
@@ -249,7 +255,7 @@ Kvantilis yra apskaičiuojamas su Present Point Function (toliau PPF). Ši funkc
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.8]{img/WeibulPPF}
-  \caption{  Weibul CDF funkcija kai λ=5; k=5.}
+  \caption{  Weibul PPF funkcija kai λ=5; k=5.}
   \label{img:WeibulPPF}
 \end{figure}
 
@@ -295,6 +301,8 @@ DNT apsimokinti panaudosime istorinius skelbimų duomenis, kurių forma būtų t
 
 , kai x - skelbimas, i - skelbimo indeksas, N - bendras skelbimų kiekis.
 
+% Čia
+
 % Tikslinga būtų paminėti, jog nemažai tyrimų panašias problemas sprendžia naudodami SVM \cite{IMGPOP,IMGPOP3,IMGPOP4}. Šiame metode kiekvienas duomenų vienetas reprezentuojamas n dimencijų grafike (n atstoja požymių skaičių), kur kiekvieno požymio vertė atstoja kordinatę. Tada klasifikavimas atliekamas randant hiper plokštę \textit{(angl. hyper-plane)}, kuri atskirtia klases minėtame grafike.
 
 % Tai nėra stebinantis atradimas turint omenyje, kad yra atlikta tyrimų teigiančių, jog SVM architektūra gali pasiekti rezultatus prilygtančius standartiniam CNN (žr. pav 5) \cite{IMGPOP5}. Bet svarbu pastebėti, jog galima to priežastis yra tas faktas, kad tų tyrimo rašymo metu dar nebuvo sukurtas ResNet.
@@ -317,10 +325,10 @@ Prototipo kūrimo eiga prasidėjo nuo duomenų rinkinio gavimo. Norint, kad duom
 \begin{enumerate}
   \item Buvo galima sukurti aplikaciją nuolatos tikrinančią skelbimų portalų skelbimų informaciją.
   \item Buvo galima paprašyti skelbimų portalų administracijos pasidalinti duomenimis. 
-  \item Buvo galime duomenis dalinai susimuliuoti.
+  \item Buvo galima duomenis dalinai susimuliuoti.
 \end{enumerate} 
 
-Gavus duomenis taip pat būtų reikėją juos apdoroti, kad jie būtų tinkami apmokyti DNT.
+Gavus duomenis taip pat reikėjo juos apdoroti, kad jie būtų tinkami apmokyti DNT.
 
 \subsubsection{Duomenų gavimas}
 
@@ -330,7 +338,9 @@ Didžiausius automobilių skelbimių telkinius Lietuvoje nepaneigiamai turi inte
 
 Bakalaurinio darbo vadovo pastangomis buvo susitikta su „Vinted“ mašinų mokymo komandos vadovu Dovydu Čeilutka. Nors pradžia atrodė daug žadanti, rezultate, dėl GDPR suvaržymų „Vinted“ duomenų duoti atsisakė.
 
-Dėl fakto, jog komunikavimas su portalų atstovais užėmė didelį laiko tarpą ir dėl bendro laiko trūkumo buvo nuspręsta sukurti interneto gremžėją, kurio paskirtis būtų surinkti skelbimų informaciją, o jų pardavimo laiką tektų, pritaikius išgalvotas taisykles, susimuliuoti. Buvo tikimasi, jog jeigu tinklas sugebės perprasti autoriaus sugalvotas taisykles (negaudamas jokios informacjos apie jas) tada jis taip pat sugebės ir nustatyti tinkamus svorius tikrovės informacijai arba, kitais žodžiais, jis bus pritaikomas realiam panaudos atvejui.
+Dėl fakto, jog komunikavimas su skelbimų prekės ženklų atstovais užėmė didelį laiko tarpą ir dėl bendro laiko trūkumo buvo nuspręsta sukurti interneto gremžėją, kurio paskirtis būtų surinkti skelbimų informaciją, o jų pardavimo laiką tektų, pritaikius išgalvotas taisykles, susimuliuoti. Buvo tikimasi, jog jeigu tinklas sugebės perprasti autoriaus sugalvotas taisykles (negaudamas jokios informacjos apie jas) tada jis taip pat sugebės ir nustatyti tinkamus svorius tikrovės informacijai arba, kitais žodžiais, jis bus pritaikomas realiam panaudos atvejui.
+
+Turint visa tai omenyje, buvo imtasi kurti duomenų gremžėją, kurio pareiga - iš „Autogidas“ portalo surinkti pakankamą kiekį automobilių skelbimų duomenų apmokinti DNT. Pats gremžėjas buvo sukurtas \textit{Python} kalba, jis naudojo būtent inteneto portalų kodo nagrinėjimui pritaikytą biblioteką „Beutiful Soup“ ir „Tor“ tapatybės slėpimo internete protokolą. Pastarasis buvo naudojamas siekiant susidaryti sąlygas greitai surinkti didelį kiekį skelbimų. Jis įgaliojo apeiti „Autogidas“ serverio apsaugas, kurios ribojo vieno IP adreso užklausų kiekį serveriui. Su „Tor“ tapo įmonoma kas kelis šimtus užklausų pakeisti IP adresą ir apeiti prieš tai minėtą apribojimą. Taip sukurta aplikacija sėkmingai surinko virš 2000 skelbimų informaciją.    
 
 Priėmus sprendimą į tinklo architektūrą įtraukti USE modulį, buvo būtina pataisyti gremžėją ir taip pat surinkti automobilių skelbimų aprašymus. Gremžėjas savo darbą atliko sėkmingai ir surinko 2231 skelbimų vienetų duomenis.
 
@@ -390,11 +400,42 @@ Prieš duomenis paduodant į DNT yra būtina juos apdoroti. Vienas iš būtinų 
   \label{tab:table example}
 \end{table}
 
-Lentelėje matomi įnvertinimai už skirtingus skelbimo parametrus. Nuotraukos taip pat įvertinamos. Tai pasiekiama duodnt taškus už nuotrauką, o jie suskaičiuojami įvertinant parametrus, kurie atsispindi nuotraukose. T.y spalva, kėbulo tipas, automobilio pagaminimo data. Jeigu automobilis po įvertinimo proceso turi neigiamą kiekį taškų, jie nunulinami.
+Lentelėje matomi įnvertinimai už skirtingus skelbimo parametrus (žr. lent. 1). Nuotraukos taip pat įvertinamos. Tai pasiekiama duodnt taškus už nuotrauką, o jie suskaičiuojami įvertinant parametrus, kurie atsispindi nuotraukose. T.y spalva, kėbulo tipas, automobilio pagaminimo data. Baigus vertinti visus skelbimo kriterijus taškai susumuojami ir gautas rezultatas laikomas dienų prireikusių parduoti objektą kiekiu. Jeigu automobilis po įvertinimo proceso turi neigiamą kiekį taškų, jie nunulinami. 
+
+WTTE tinklui svarbus duomuo yra teigiamą arba neigiamą reikšme turinti savybė nusakanti ar objekto duomenys yra cenzūruoti. Kaip minėta prieš tai, cenzūruoti duomenys yra tie, kurių įvykio mes dar neužfiksavome. Sukurti tokia duomenų savybę buvo nesudėtinga - tereikėjo pažymėti visus skelbimus, kurie surinko mažiau negu x taškų cenzūruotais. 
+
+Atlikus duomenų atvaizdavimą galime pastebėti, kad duomenys beveik tobulai atitinka skirstinio įgaunamas formas (žr. pav. x). Net parametrai, kurie nebuvo dirbtinai sugeneruoti paklūsta pasiskirstymams ir sukurta forma primena vadinamą \textit{bell curve}. 
 
 \subsection{Modelio kūrimas}
 
+Prieš pradedant kurti modelį buvo pirma sukurta programa padedanti geriau susipažinti su statistikos pagrindais. Buvo sukurta programa generuojanti atsitiktinius skaičius pagal Weibull skirstinį, juos pateikiančius paprastam pilnai sujungtam neuroniniam tinklui ir, tinklo išvestyje, pateikianti prognozuojamus Weibull skirstinio parametrus. Turint parametrus, programai belikdavo paskaičiuoti kvantilį tam tikrame taške. Naudojantis daugeliu šios programos logikos buvo sukurti grafikai panaudoti ankstesniuose darbo skyriuose (žr. pav. x). Bekuriant šią programą buvo susidurta su problema, kad Tensorflow karkasas (kurį apgaubia Keras karkasas) palaiko tik tam tikrą kiekį skirstinių, kurių tarpe nebuvo Weibull skirstinio. Daugiau pasidomėjus buvo surasta, kad Tensorflow palaiko Weibull binominį objektą. Tai šiek tiek žemesnio lygio įrankis, negu Tensorflow Distribution objektas, bet atlikus šiek tiek papildomos logikos buvo galima pasiekti trokštamą rezultatą. Palyginimui, Distribution objektas leidžia tiesiogiai sukurti atsitiktinią atitinkamo skirstinio vertę. 
 
+Modelio kūrimo procesas prasidėjo tinklo skirto WTTE sėkmingumui palyginti sudarymu. Šis tinklas buvo sukurtas naudojant Keras karkasą, Google Colab programavimo aplinkoje. Šis įrankis sudarė palankias sąlygas nesudėtingai, be didesnių sunkumų, dalintis programiniu kodu su bakalaurinio darbo vadovu, sutaupyti asmeninio kompiuterio resursų. Kurtas DNT, kaip minėta prieš tai, dalinasi daug architektūrinių sprendimų su pagrindiniu WTTE tinklu. Jis naudoja iš anksto apmokintą ResNet tinklą skirtą išgauti skelbimuose esančių paveiksliukų savybėms, jis pasitelkia Google sukurtu USE modeliu, kurio irgi yra iš anksto apmokintas ir yra skirtas apdoroti skelbimų aprašymus. Skaičių vektoriai gauti iš paveiksliukų ir iš skelbimų aprašymų tada yra sujungiami kartu su kitomis skelbimo savybėmis (rida, kaina ir t.t.). Gautas savybių vektorius pateikiamas pilnai sujungtam tinklui. Buvo bandoma daug įvairių hiperparametų ir sluoksnių kiekių minetąjąm pilnai sujungtam tinklui. Buvo bandomas plataus tinklo priėjimas, tai yra, turint mažai sluoksnių, bet, sluoksniuose, turint daug neuronų ir buvo bandoma siauro bet ilgo tinklo priėjimas. Pastarasis turėjo mažai neuronų, bet pasitelkė daug sluoksnių. Atlikus daug eksperimentų buvo pasirinkta naudoti tris plačius sluoksnius, nes jie pasiekė geriausius rezultatus (žr. lent. x).
+
+\begin{table}[H]\footnotesize
+  \centering
+  \caption{ Rėmimosi DNT architektūrų bandymai ir tikslumai. Pasiektas tikslumas įvertinamas vidutiniška absoliuti paklaida \textit{(angl. Mean Absolute Error)}. Naudojama \textit{loss} funkcija - vidutinė kvardratinė paklaida.}
+  {\begin{tabular}{|c|c|c|c|c|c|} \hline
+    Pirmo sl. neuronų sk. & Tarpinų sl. neuronų sk. & Sluoksniai & Aktyvacijos f-ja & Pasiektas tikslumas & Epochos \\
+    \hline
+    20000 & 1000 & 5  &   Rectifier  & 40.7847  & 100 \\
+    \hline
+    10000 & 1000 & 5  &   Rectifier  & 41.3801  & 100 \\
+    \hline
+    5000 & 1000 & 5  &   Rectifier  & 41.3647  & 100 \\
+    \hline
+  \end{tabular}}
+  \label{tab:table example}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.8]{img/RESULT1}
+  \caption{ DNT padarytų spėjimų atitikimas tikriems duomenims. }
+  \label{img:RESULT1}
+\end{figure}
+
+Sukūrus bazinį palyginimui skirtą tinklą buvo galima imtis pagrindinio tinklo predėjimo. Naujasis WTTE tinklas dalinasi visais architektūriniais sprendimais kaip ir bazinis išskyrus aktyvacijos ir \textit{loss} funkcijas, ir, taip pat, cenzūruotų duomenų panaudojimą. Kadangi, naujasis modelis turi naudoti specialiai pritaikytas aktyvacijos ir \textit{loss} funkcijas buvo būtina skirti laiko ir pastangų nišiniam Keras karkaso specialių (angl. custom) funkcijų funkcionalumui.išsiaiškinti. Ilgai netrukus buvo susidurta su problema - pritaikius tinklą savo specialioms reikmėms jis pradėjo, kaip \textit{loss} funkcijos rezultatą išvedinėti „NaN“ reikšmę. 
 
 \sectionnonum{Rezultatai ir išvados}
 
